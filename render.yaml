@@ -1,0 +1,29 @@
+# render.yaml — Render Infrastructure-as-Code
+# Docs: https://render.com/docs/infrastructure-as-code
+
+services:
+  - type: web
+    name: expense-tracker
+    runtime: node
+    # Render sets CWD to the repo root
+    buildCommand: npm install --prefix backend && npm install --prefix frontend && npm --prefix backend run build && npm --prefix frontend run build
+    startCommand: node backend/dist/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # PORT is automatically injected by Render — do NOT hardcode it
+      # DB_PATH defaults to ./expenses.db (ephemeral on free tier).
+      # For a persistent database, uncomment the disk section below
+      # and change the value to /var/data/expenses.db
+      - key: DB_PATH
+        value: ./expenses.db
+
+  # ── Persistent SQLite (requires a paid Render plan) ──────────────────────────
+  # To enable:
+  #   1. Upgrade to a paid instance (e.g. Starter $7/mo)
+  #   2. Uncomment the disk block below
+  #   3. Change DB_PATH value to /var/data/expenses.db
+  # disk:
+  #   name: sqlite-data
+  #   mountPath: /var/data
+  #   sizeGB: 1
