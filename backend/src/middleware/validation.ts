@@ -13,7 +13,12 @@ export function validate(
       return;
     }
 
-    req[source] = parseResult.data as Request['body'] & Request['query'];
+    if (source === 'body') {
+      req.body = parseResult.data;
+    } else {
+      Object.assign(req.query, parseResult.data as Request['query']);
+    }
+
     next();
   };
 }

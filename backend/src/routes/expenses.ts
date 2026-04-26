@@ -22,8 +22,8 @@ router.get('/', validate(getExpensesQuerySchema, 'query'), (req, res) => {
 
 router.post(
   '/',
-  validate(createExpenseSchema, 'body'),
   idempotencyMiddleware,
+  validate(createExpenseSchema, 'body'),
   (req, res) => {
     const body = req.body as CreateExpenseDTO;
     const idempotencyKey = (req as IdempotencyRequestShape).idempotencyKey;

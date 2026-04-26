@@ -11,6 +11,14 @@ export function errorHandler(
   res: Response,
   _next: NextFunction
 ): void {
+  if (err instanceof SyntaxError && 'status' in err) {
+    const status = Number((err as { status: unknown }).status);
+    if (status === 400) {
+      res.status(400).json({ error: 'Malformed JSON request body' });
+      return;
+    }
+  }
+
   if (err instanceof ZodError) {
     res.status(400).json({
       error: 'Validation failed',
