@@ -6,7 +6,7 @@ services:
     name: expense-tracker
     runtime: node
     # Render sets CWD to the repo root
-    buildCommand: npm install --prefix backend && npm install --prefix frontend && npm --prefix backend run build && npm --prefix frontend run build
+    buildCommand: npm install --include=dev --prefix backend && npm install --include=dev --prefix frontend && npm --prefix backend run build && npm --prefix frontend run build
     startCommand: node backend/dist/index.js
     envVars:
       - key: NODE_ENV
