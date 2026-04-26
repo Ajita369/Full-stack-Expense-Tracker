@@ -16,6 +16,13 @@ export interface CreateExpenseInput {
 	date: string;
 }
 
+export interface UpdateExpenseInput {
+	amount: number;
+	category: string;
+	description: string;
+	date: string;
+}
+
 export interface ExpenseFilters {
 	category?: string;
 	sort: ExpenseSort;

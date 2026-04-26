@@ -103,6 +103,17 @@ button.secondary {
   color: #17223c;
 }
 
+button.danger {
+  background: #fecaca;
+  color: #991b1b;
+}
+
+button.compact {
+  padding: 0.4rem 0.58rem;
+  font-size: 0.78rem;
+  border-radius: 8px;
+}
+
 button:disabled {
   opacity: 0.65;
   cursor: not-allowed;
@@ -166,6 +177,15 @@ thead th {
   text-align: right;
 }
 
+.actions-col {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.actions-col button + button {
+  margin-left: 0.4rem;
+}
+
 .category-cell {
   text-transform: capitalize;
 }
@@ -185,6 +205,34 @@ thead th {
   border: 1px solid var(--table-border);
   border-radius: 10px;
   padding: 0.44rem 0.6rem;
+}
+
+.edit-row td {
+  background: rgba(148, 163, 184, 0.08);
+}
+
+.inline-edit-form {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.inline-edit-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+@media (max-width: 760px) {
+  .inline-edit-form {
+    grid-template-columns: 1fr;
+  }
+
+  .actions-col {
+    min-width: 132px;
+  }
 }
 
 @media (max-width: 980px) {

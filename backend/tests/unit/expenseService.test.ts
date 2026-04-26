@@ -98,4 +98,55 @@ describe('expenseService', () => {
     expect(cleanupSpy).toHaveBeenCalledWith(12);
     expect(cleaned).toBe(3);
   });
+
+  it('updates expense and returns updated entity', () => {
+    const updated: Expense = {
+      id: 'exp-1',
+      amount: 7000,
+      category: 'travel',
+      description: 'Train',
+      date: '2026-04-21',
+      created_at: '2026-04-20 10:00:00',
+    };
+
+    const updateSpy = vi
+      .spyOn(expenseRepository, 'updateById')
+      .mockReturnValue(updated);
+
+    const result = expenseService.updateExpense('exp-1', {
+      amount: 7000,
+      category: ' TRAVEL ',
+      description: ' Train ',
+      date: '2026-04-21',
+    });
+
+    expect(updateSpy).toHaveBeenCalledWith('exp-1', {
+      amount: 7000,
+      category: 'travel',
+      description: 'Train',
+      date: '2026-04-21',
+    });
+    expect(result).toEqual(updated);
+  });
+
+  it('throws not found when updating missing expense', () => {
+    vi.spyOn(expenseRepository, 'updateById').mockReturnValue(null);
+
+    expect(() =>
+      expenseService.updateExpense('missing-id', {
+        amount: 1000,
+        category: 'food',
+        description: 'Snack',
+        date: '2026-04-21',
+      })
+    ).toThrow('Expense not found');
+  });
+
+  it('throws not found when deleting missing expense', () => {
+    vi.spyOn(expenseRepository, 'deleteById').mockReturnValue(false);
+
+    expect(() => expenseService.deleteExpense('missing-id')).toThrow(
+      'Expense not found'
+    );
+  });
 });

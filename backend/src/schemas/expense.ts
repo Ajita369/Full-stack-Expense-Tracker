@@ -49,6 +49,12 @@ export const createExpenseSchema = z.object({
     .refine((value) => isReasonableDate(value), 'date cannot be unreasonably in the future'),
 });
 
+export const updateExpenseSchema = createExpenseSchema;
+
+export const expenseIdParamSchema = z.object({
+  id: z.uuid({ error: 'expense id must be a valid UUID' }),
+});
+
 export const getExpensesQuerySchema = z.object({
   category: z
     .string()

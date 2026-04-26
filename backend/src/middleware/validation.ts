@@ -3,7 +3,7 @@ import { ZodType } from 'zod';
 
 export function validate(
   schema: ZodType,
-  source: 'body' | 'query' = 'body'
+  source: 'body' | 'query' | 'params' = 'body'
 ) {
   return (req: Request, _res: Response, next: NextFunction) => {
     const parseResult = schema.safeParse(req[source]);
@@ -15,8 +15,10 @@ export function validate(
 
     if (source === 'body') {
       req.body = parseResult.data;
-    } else {
+    } else if (source === 'query') {
       Object.assign(req.query, parseResult.data as Request['query']);
+    } else {
+      Object.assign(req.params, parseResult.data as Request['params']);
     }
 
     next();

@@ -128,6 +128,71 @@ describe('expenses integration', () => {
     expect(response.body.error).toBe('Validation failed');
   });
 
+  it('updates an expense by id', async () => {
+    const created = await request(app).post('/api/expenses').send({
+      amount: 4200,
+      category: 'Food',
+      description: 'Lunch',
+      date: '2026-04-20',
+    });
+
+    const updated = await request(app)
+      .put(`/api/expenses/${created.body.id}`)
+      .send({
+        amount: 5600,
+        category: 'Travel',
+        description: 'Cab ride',
+        date: '2026-04-22',
+      });
+
+    expect(updated.status).toBe(200);
+    expect(updated.body).toMatchObject({
+      id: created.body.id,
+      amount: 5600,
+      category: 'travel',
+      description: 'Cab ride',
+      date: '2026-04-22',
+    });
+  });
+
+  it('returns 404 when updating a missing expense', async () => {
+    const response = await request(app)
+      .put('/api/expenses/550e8400-e29b-41d4-a716-446655440000')
+      .send({
+        amount: 5600,
+        category: 'Travel',
+        description: 'Cab ride',
+        date: '2026-04-22',
+      });
+
+    expect(response.status).toBe(404);
+    expect(response.body.error).toBe('Expense not found');
+  });
+
+  it('deletes an expense by id', async () => {
+    const created = await request(app).post('/api/expenses').send({
+      amount: 900,
+      category: 'Food',
+      description: 'Tea',
+      date: '2026-04-20',
+    });
+
+    const deleted = await request(app).delete(`/api/expenses/${created.body.id}`);
+    expect(deleted.status).toBe(204);
+
+    const listed = await request(app).get('/api/expenses');
+    expect(listed.body).toHaveLength(0);
+  });
+
+  it('returns 404 when deleting a missing expense', async () => {
+    const response = await request(app).delete(
+      '/api/expenses/550e8400-e29b-41d4-a716-446655440000'
+    );
+
+    expect(response.status).toBe(404);
+    expect(response.body.error).toBe('Expense not found');
+  });
+
   it('returns 400 for invalid idempotency key', async () => {
     const response = await request(app)
       .post('/api/expenses')

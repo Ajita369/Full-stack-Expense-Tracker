@@ -1,6 +1,21 @@
 import { randomUUID } from 'node:crypto';
 import { expenseRepository } from '../repositories/expenseRepo.js';
-import { CreateExpenseDTO, Expense, ExpenseFilters } from '../types/index.js';
+import {
+  CreateExpenseDTO,
+  Expense,
+  ExpenseFilters,
+  UpdateExpenseDTO,
+} from '../types/index.js';
+
+type HttpError = Error & {
+  statusCode?: number;
+};
+
+function makeNotFoundError(message: string): HttpError {
+  const error: HttpError = new Error(message);
+  error.statusCode = 404;
+  return error;
+}
 
 export class ExpenseService {
   createExpense(dto: CreateExpenseDTO, idempotencyKey?: string): Expense {
@@ -31,6 +46,27 @@ export class ExpenseService {
 
   getExpenses(filters: ExpenseFilters): Expense[] {
     return expenseRepository.findAll(filters);
+  }
+
+  updateExpense(id: string, dto: UpdateExpenseDTO): Expense {
+    const updated = expenseRepository.updateById(id, {
+      ...dto,
+      category: dto.category.trim().toLowerCase(),
+      description: dto.description.trim(),
+    });
+
+    if (!updated) {
+      throw makeNotFoundError('Expense not found');
+    }
+
+    return updated;
+  }
+
+  deleteExpense(id: string): void {
+    const deleted = expenseRepository.deleteById(id);
+    if (!deleted) {
+      throw makeNotFoundError('Expense not found');
+    }
   }
 
   cleanupExpiredIdempotencyKeys(hoursToKeep = 24): number {

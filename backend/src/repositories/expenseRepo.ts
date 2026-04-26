@@ -1,9 +1,9 @@
 import { getDb } from '../db/connection.js';
 import {
-  CreateExpenseDTO,
   Expense,
   ExpenseFilters,
   StoredIdempotencyResponse,
+  UpdateExpenseDTO,
 } from '../types/index.js';
 
 interface IdempotencyRow {
@@ -66,6 +66,37 @@ export class ExpenseRepository {
     const row = statement.get(id) as Expense | undefined;
 
     return row ?? null;
+  }
+
+  updateById(id: string, dto: UpdateExpenseDTO): Expense | null {
+    const db = getDb();
+    const statement = db.prepare(
+      `UPDATE expenses
+       SET amount = ?, category = ?, description = ?, date = ?
+       WHERE id = ?`
+    );
+
+    const result = statement.run(
+      dto.amount,
+      dto.category,
+      dto.description,
+      dto.date,
+      id
+    );
+
+    if (result.changes === 0) {
+      return null;
+    }
+
+    return this.findById(id);
+  }
+
+  deleteById(id: string): boolean {
+    const db = getDb();
+    const statement = db.prepare('DELETE FROM expenses WHERE id = ?');
+    const result = statement.run(id);
+
+    return result.changes > 0;
   }
 
   findIdempotencyKey(key: string): StoredIdempotencyResponse | null {

@@ -16,6 +16,13 @@ export interface CreateExpenseDTO {
 	date: string;
 }
 
+export interface UpdateExpenseDTO {
+	amount: number;
+	category: string;
+	description: string;
+	date: string;
+}
+
 export interface ExpenseFilters {
 	category?: string;
 	sort?: ExpenseSort;

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createExpense, getExpenses } from './expenses';
+import { createExpense, deleteExpense, getExpenses, updateExpense } from './expenses';
 import type { CreateExpenseInput } from '../types';
 
 const sampleExpense: CreateExpenseInput = {
@@ -81,5 +81,51 @@ describe('expenses api client', () => {
     await getExpenses({ sort: 'date_desc', category: 'food' });
 
     expect(fetchMock).toHaveBeenCalledWith('/api/expenses?category=food&sort=date_desc');
+  });
+
+  it('updates an expense by id', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        id: 'exp-1',
+        amount: 18000,
+        category: 'travel',
+        description: 'Cab',
+        date: '2026-04-26',
+        created_at: '2026-04-26 10:00:00',
+      }),
+    });
+
+    vi.stubGlobal('fetch', fetchMock);
+
+    await updateExpense('exp-1', {
+      amount: 18000,
+      category: 'travel',
+      description: 'Cab',
+      date: '2026-04-26',
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/expenses/exp-1',
+      expect.objectContaining({
+        method: 'PUT',
+      })
+    );
+  });
+
+  it('deletes an expense by id', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 204,
+    });
+
+    vi.stubGlobal('fetch', fetchMock);
+
+    await deleteExpense('exp-1');
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/expenses/exp-1',
+      expect.objectContaining({ method: 'DELETE' })
+    );
   });
 });

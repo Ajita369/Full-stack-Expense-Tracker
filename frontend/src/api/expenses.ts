@@ -1,4 +1,9 @@
-import type { CreateExpenseInput, Expense, ExpenseFilters } from '../types';
+import type {
+  CreateExpenseInput,
+  Expense,
+  ExpenseFilters,
+  UpdateExpenseInput,
+} from '../types';
 
 const API_BASE = '/api/expenses';
 
@@ -88,4 +93,45 @@ export async function getExpenses(filters: ExpenseFilters): Promise<Expense[]> {
   }
 
   return (await response.json()) as Expense[];
+}
+
+export async function updateExpense(
+  id: string,
+  data: UpdateExpenseInput
+): Promise<Expense> {
+  let response: Response;
+
+  try {
+    response = await fetch(`${API_BASE}/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+  } catch {
+    throw new ApiError('Network error. Please check your connection and try again.', 0);
+  }
+
+  if (!response.ok) {
+    throw await buildApiError(response);
+  }
+
+  return (await response.json()) as Expense;
+}
+
+export async function deleteExpense(id: string): Promise<void> {
+  let response: Response;
+
+  try {
+    response = await fetch(`${API_BASE}/${id}`, {
+      method: 'DELETE',
+    });
+  } catch {
+    throw new ApiError('Network error. Please check your connection and try again.', 0);
+  }
+
+  if (!response.ok) {
+    throw await buildApiError(response);
+  }
 }
