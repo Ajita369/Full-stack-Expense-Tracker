@@ -87,6 +87,35 @@ describe('expenses integration', () => {
     expect(filtered.body[0].category).toBe('food');
   });
 
+  it('returns expenses sorted by newest date first', async () => {
+    await request(app).post('/api/expenses').send({
+      amount: 1000,
+      category: 'Food',
+      description: 'Oldest',
+      date: '2026-04-20',
+    });
+    await request(app).post('/api/expenses').send({
+      amount: 1000,
+      category: 'Food',
+      description: 'Newest',
+      date: '2026-04-27',
+    });
+    await request(app).post('/api/expenses').send({
+      amount: 1000,
+      category: 'Food',
+      description: 'Middle',
+      date: '2026-04-24',
+    });
+
+    const response = await request(app).get('/api/expenses?sort=date_desc');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveLength(3);
+    expect(response.body[0].description).toBe('Newest');
+    expect(response.body[1].description).toBe('Middle');
+    expect(response.body[2].description).toBe('Oldest');
+  });
+
   it('returns 400 for invalid payloads', async () => {
     const response = await request(app).post('/api/expenses').send({
       amount: -100,
