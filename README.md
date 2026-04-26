@@ -147,7 +147,6 @@ Manual:
 - No pagination: list is unpaginated for simplicity.
 - No authentication/authorization: single-user scope.
 - No external migration tool: schema initialized in code during startup.
-- No deployment infrastructure in repo: local-first implementation.
 
 
 ## Future Enhancements
@@ -155,5 +154,4 @@ Manual:
 1. Add pagination and date-range filtering.
 2. Add authentication and multi-user data isolation.
 3. Add CI pipeline with lint/build/test gates.
-4. Add production deployment and monitoring.
-5. Add audit trail/history for expense changes.
+4. Add audit trail/history for expense changes.
